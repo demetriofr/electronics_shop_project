@@ -87,3 +87,15 @@ class Item:
     def string_to_number(string):
         string.split('.')
         return int(string[0])
+
+    def __repr__(self):
+        """
+        Выводит информацию о классе и аттрибутах класса.
+        """
+        return f"{self.__class__.__name__}('{self.name}', {self.price}, {self.quantity})"
+
+    def __str__(self):
+        """
+        Выводит информацию об аттрибуте название товара
+        """
+        return f"{self.name}"
