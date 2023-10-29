@@ -93,9 +93,20 @@ class Item:
         Выводит информацию о классе и аттрибутах класса.
         """
         return f"{self.__class__.__name__}('{self.name}', {self.price}, {self.quantity})"
+        # return f"{self.__class__.__name__}('{str(self.__dict__.values())[14:-2]})"  # Не очень наглядно, но эффективно
 
     def __str__(self):
         """
         Выводит информацию об аттрибуте название товара
         """
         return f"{self.name}"
+
+    def __add__(self, other):
+        """
+        Складывает атрибут количество товара (quantity)
+        класса Item и (или) его дочерних классов
+        """
+        if isinstance(other, self.__class__):
+            return self.quantity + other.quantity
+        else:
+            raise ValueError('Складываться должны атрибуты quantity класса Item и (или) его дочерних классов')
