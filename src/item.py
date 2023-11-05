@@ -1,6 +1,8 @@
 import os.path
 from csv import DictReader
 
+from src.csverror import InstantiateCSVError
+
 
 class Item:
     """
@@ -8,6 +10,7 @@ class Item:
     """
     pay_rate = 1.0
     all = 0
+    PATH_NAME = 'src/items.csv'
 
     def __init__(self, name: str, price: float, quantity: int) -> None:
         """
@@ -22,7 +25,7 @@ class Item:
         self.quantity = quantity
         super().__init__()
 
-        Item.all += 1
+        self.all += 1
 
     def calculate_total_price(self) -> float:
         """
@@ -56,22 +59,33 @@ class Item:
         self.__name = name
 
     @classmethod
-    def instantiate_from_csv(cls, path_name):
+    def instantiate_from_csv(cls, path_name=PATH_NAME):
         """
         Создаёт объекты из данных файла .csv
         """
 
         items = []
         path_name = str(cls.path_file(path_name))
-        with open(path_name, newline='', encoding='windows-1251') as csv_f:
-            reader = DictReader(csv_f)
-            for row in reader:
-                name = str(row['name'])
-                price = float(row['price'])
-                quantity = int(row['quantity'])
-                item = cls(name, price, quantity)
-                items.append(item)
-            cls.all = items
+
+        try:
+            with open(path_name, newline='', encoding='windows-1251') as csv_f:
+                reader = DictReader(csv_f)
+                if reader.fieldnames != ['name', 'price', 'quantity']:
+                    raise InstantiateCSVError
+                for row in reader:
+                    name = str(row['name'])
+                    price = float(row['price'])
+                    quantity = int(row['quantity'])
+                    item = cls(name, price, quantity)
+                    items.append(item)
+                cls.all += len(items)
+        except FileNotFoundError:
+            err_text = 'FileNotFoundError: Отсутствует файл item.csv'
+            print(err_text)
+            return err_text
+        except InstantiateCSVError as err:
+            print(err)
+            return err
 
     @staticmethod
     def path_file(path_name):
